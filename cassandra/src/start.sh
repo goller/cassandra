@@ -2,7 +2,8 @@
 
 # Accept listen_address
 IP=${LISTEN_ADDRESS:-`hostname --ip-address`}
-
+# Add opscenderd address
+OPS_CENTER=${OPS_CENTER:-$IP}
 # Accept seeds via docker run -e SEEDS=seed1,seed2,...
 SEEDS=${SEEDS:-$IP}
 
@@ -37,7 +38,8 @@ if [[ $DC && $RACK ]]; then
   echo "dc=$DC" > $CONFIG/cassandra-rackdc.properties
   echo "rack=$RACK" >> $CONFIG/cassandra-rackdc.properties
 fi
-
+echo Configuring OpsCenter Agent to allow $OPS_CENTER
+echo "stomp_interface: $OPS_CENTER" > /var/lib/datastax-agent/conf/address.yaml
 # Start process
 echo Starting Cassandra on $IP...
 /usr/bin/supervisord
