@@ -39,7 +39,7 @@ if [[ $DC && $RACK ]]; then
   echo "rack=$RACK" >> $CONFIG/cassandra-rackdc.properties
 fi
 echo Configuring OpsCenter Agent to allow $OPS_CENTER
-echo "stomp_interface: $OPS_CENTER" > /var/lib/datastax-agent/conf/address.yaml
+echo "stomp_interface: $OPS_CENTER" > /etc/datastax-agent/address.yaml
 # Start process
 echo Starting Cassandra on $IP...
 /usr/bin/supervisord
