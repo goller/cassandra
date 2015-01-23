@@ -1,0 +1,25 @@
+[Unit]
+Description=Cassandra Node
+
+[Service]
+EnvironmentFile=/etc/environment
+TimeoutStartSec=0
+RemainAfterExit=yes
+ExecStartPre=-/usr/bin/docker kill %p-%i
+ExecStartPre=-/usr/bin/docker rm -f %p-%i
+ExecStartPre=-/usr/bin/docker pull goller/cassandra
+ExecStart=/usr/bin/bash \
+-c "/usr/bin/docker run \
+-e SEEDS=$(etcdctl get /services/db/cassandra/node1) \
+-e OPS_CENTER=$(etcdctl get /services/db/cassandra/opscenter) \
+--add-host $(hostname):${COREOS_PUBLIC_IPV4} \
+--net=host \
+--name %p-%i \
+-v /data/db/cassandra:/data \
+goller/cassandra"
+ExecStop= /usr/bin/docker stop -t 3 %p-%i
+
+[X-Fleet]
+X-Conflicts=cassandra-node@*.service
+X-Conflicts=CassandraSeed.Service
+

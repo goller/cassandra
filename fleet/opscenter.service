@@ -1,0 +1,18 @@
+[Unit]
+Description=Cassandra OpsCenter
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+RemainAfterExit=yes
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm -f %p
+ExecStartPre=-/usr/bin/etcdctl set /services/db/cassandra/opscenter "$COREOS_PUBLIC_IPV4"
+ExecStartPre=-/usr/bin/docker pull goller/opscenter
+ExecStart=/usr/bin/bash -c \
+ "/usr/bin/docker run \
+ --net=host \
+ --add-host $(hostname):${COREOS_PUBLIC_IPV4} \
+ --name %p \
+ goller/opscenter"
+ExecStop= /usr/bin/docker stop -t 3 %p
